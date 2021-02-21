@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicTacToe</title>
+    <style>
+        td { 
+            border:1px solid black; width: 50px; height: 50px; 
+            text-align: center; font-weight: bold; vertical-align: middle; font-size: 34px;
+        }
+    </style>
+</head>
+<body>
+    <!--
+    <table>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    -->
+
+    <script>
+        var 바디 = document.body;
+        var 테이블 = document.createElement('테이블');
+        var 줄들 = [];
+        var 칸들 = [];
+        var 턴 = 'X';
+        var 결과 = document.createElement('div');
+        
+        var 비동기콜백 = function(e){
+            console.log(e.target); //이벤트가 발생된 태그 : 칸
+            console.log(e.target.parentNode); //이벤트가 발생된 태그의 부모 : 줄
+            console.log(e.target.parentNode.parentNode); //테이블
+
+
+            //위치 알아내기
+            var 몇줄 = 줄들.indexOf(e.target.parentNode);
+            console.log('몇줄',몇줄);
+
+            var 몇칸 = 칸들[몇줄].indexOf(e.target);
+            console.log('몇칸',몇칸);
+
+
+            //Q.칸이 이미 채워져 있는가?
+            if(칸들[몇줄][몇칸].textContent !== '') { 
+                console.log('빈칸이 아닙니다.');
+                
+            } else {
+                console.log('빈칸입니다.');
+                칸들[몇줄][몇칸].textContent = 턴;
+
+                //Q.세칸이 다 채워졌나?
+                var 다참 = false;
+
+                //1. 가로줄검사
+                if(칸들[몇줄][0].textContent===턴 && 칸들[몇줄][1].textContent===턴 && 칸들[몇줄][2].textContent===턴) {
+                    다참 = true;
+                }
+
+                //2. 세로줄검사
+                if(칸들[0][몇칸].textContent===턴 && 칸들[1][몇칸].textContent===턴 && 칸들[2][몇칸].textContent===턴) {
+                    다참 = true;
+                }
+
+                //3-1. 대각선검사(칸과 줄이 같은 위치의 블럭인 경우)
+                if(몇줄-몇칸 === 0) {
+                    if(칸들[0][0].textContent===턴 && 칸들[1][1].textContent===턴 && 칸들[2][2].textContent===턴) {
+                        다참 = true;  
+                    }
+                }
+
+                //3-2. 대각선검사
+                if(Math.abs(몇줄-몇칸) === 2 ) {
+                    if(칸들[0][2].textContent===턴 && 칸들[1][1].textContent===턴 && 칸들[2][0].textContent===턴) {
+                        다참 = true;  
+                    }
+                }
+
+                //4. 다 찼으면
+                if(다참 === true) {
+                    결과.textContent = '턴' + '님이 승리!👍';
+                    //initalize
+                    턴 = 'X';
+                    칸들.forEach(function(줄){
+                        줄.forEach(function(칸){
+                            칸.textContent = '';
+                        });
+                    });
+                } else {
+                    //다 안찼으면 턴을 넘긴다
+                    if(턴 === 'X') {
+                        턴 = 'O';
+                    } else {
+                        턴 = 'X';
+                    }
+                }
+            }
+        };
+
+
+        for(var i =0; i<3; i++){
+            var 줄 = document.createElement('tr');
+            줄들.push(줄);
+            칸들.push([]);
+
+            for(var j=0; j<3; j++){
+                var 칸 = document.createElement('td');
+                //비동기콜백
+                칸.addEventListener('click', 비동기콜백);
+                칸들[i].push(칸);
+                줄.appendChild(칸);
+            }
+            테이블.appendChild(줄);
+        }
+        바디.appendChild(테이블);
+        바디.appendChild(결과);
+        // console.log(칸들,줄들);
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotto</title>
+</head>
+<body>
+    <div>당첨 숫자😉</div>
+    <div id="결과창"></div>
+    <div>보너스!🎁</div>
+    <div class="보너스"></div>
+
+    <script>
+        //[Mapping]
+        var 후보군 = Array(45).fill().map(function( 요소, 인덱스 ){
+            return 인덱스 +1;
+        });
+        console.log(후보군);
+
+        var 셔플 = [];
+        while(후보군.length > 0) {
+            var 이동값 = 후보군.splice(Math.floor( Math.random() * 후보군.length ), 1); //0~44에서 한개 뽑기
+            셔플.push(이동값);
+        }
+        console.log(셔플);
+
+        var 보너스 = 셔플[셔플.length - 1];
+        var 당첨숫자들 = 셔플.slice(0,6).sort(function(p, c){ return p-c; }); //0~5
+        //오름차순 : p-c(앞-뒤)가 0보다 크면 순서를 바꿈 
+
+        console.log('당첨숫자들 : ' + 당첨숫자들 + ' / 보너스숫자 : ' + 보너스); 
+
+
+        //[출력], "겹치는 부분은 함수 + 다른 부분은 매개변수"
+        var 결과창 = document.querySelector('#결과창');
+        function ballColor(숫자, 결과창){
+            var 공 = document.createElement('div');
+            공.textContent = 숫자;
+            공.className = '공아이디' + 숫자;
+            공.style.display = 'inline-block';
+            공.style.border = '1px solid black';
+            공.style.borderRadius = '50%';
+            공.style.width = '20px';
+            공.style.height = '20px';
+            공.style.textAlign = 'center';
+            공.style.marginRight = '10px';
+            공.style.fontSize = '12px';
+            공.style.lineHeight = '20px';
+            
+            var 배경색;
+            if(숫자 <= 10) {
+                배경색 = 'red';
+            } else if(숫자 <= 20) {
+                배경색 = 'orange';
+            } else if(숫자 <= 30) {
+                배경색 = 'yellow';
+            } else if(숫자 <= 40) {
+                배경색 = 'blue';
+            } else {
+                배경색 = 'green';
+            }
+            공.style.backgroundColor = 배경색;
+
+            결과창.appendChild(공);
+        }
+
+        setTimeout(function 비동기콜백함수(){
+            ballColor(당첨숫자들[0], 결과창);
+        }, 1000);
+
+        setTimeout(function 비동기콜백함수(){
+            ballColor(당첨숫자들[1], 결과창);
+        }, 2000);
+
+        setTimeout(function 비동기콜백함수(){
+            ballColor(당첨숫자들[2], 결과창);
+        }, 3000);
+
+        setTimeout(function 비동기콜백함수(){
+            ballColor(당첨숫자들[3], 결과창);
+        }, 4000);
+
+        setTimeout(function 비동기콜백함수(){
+            ballColor(당첨숫자들[4], 결과창);
+        }, 5000);
+
+        setTimeout(function 비동기콜백함수(){
+            ballColor(당첨숫자들[5], 결과창);
+        }, 6000);
+
+        //보너스 공
+        setTimeout(function 비동기콜백(){
+            var 칸 = document.querySelector('.보너스');
+            ballColor(보너스, 칸);
+        }, 7000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rockPaperScissors</title>
+
+    <style>
+        #computer {
+            width: 142px;
+            height: 200px;
+            background: url('https://en.pimg.jp/023/182/267/1/23182267.jpg') no-repeat 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="computer">
+        <img src="" alt="">
+    </div>
+    
+    <div>
+        <button id="rock" class="btn">바위</button>
+        <button id="scissors" class="btn">가위</button>
+        <button id="paper" class="btn">보</button>
+    </div>
+    
+    
+    <script>
+        var 이미지좌표 = '0';
+        // 딕셔너리 자료구조
+        var rockPaperScissors = {
+            바위: '0',
+            가위: '-142px',
+            보: '-284px'
+        };
+
+        //console.log(Object.entries(rockPaperScissors)); 객체를 배열로 바꾸기
+        function 컴퓨터의선택(이미지좌표) {
+            return Object.entries(rockPaperScissors).find(function(v){
+                return v[1] === 이미지좌표; //true시 종료
+            })[0];
+        }
+
+        var interval;
+        function intervalMaker(){
+            interval = setInterval(function() {
+                if (이미지좌표 === rockPaperScissors.바위) {
+                    이미지좌표 = rockPaperScissors.가위;
+                } else if(이미지좌표 === rockPaperScissors.가위) {
+                    이미지좌표 = rockPaperScissors.보;
+                } else {
+                    이미지좌표 = rockPaperScissors.바위;
+                }
+                document.querySelector('#computer').style.background =
+                    'url(https://en.pimg.jp/023/182/267/1/23182267.jpg) ' + 이미지좌표 + ' 0';
+            }, 100);
+        }
+        intervalMaker();
+
+    
+        var 점수표 = {
+            가위: 1,
+            바위: 0,
+            보: -1
+        }
+
+        document.querySelectorAll('.btn').forEach(function(btn){
+            btn.addEventListener('click', function(){
+
+                clearInterval(interval); //setInterval 멈추기
+                setTimeout(function(){
+                    intervalMaker();
+                }, 1000);
+
+                var myChoice = this.textContent;
+
+                //리팩토링
+                var 나의점수 = 점수표[myChoice];
+                var 컴퓨터점수 = 점수표[컴퓨터의선택(이미지좌표)];
+                var 점수차 = 나의점수 - 컴퓨터점수; 
+                if(점수차 === 0) {
+                    alert('비겼습니다.');
+                } else if(점수차 === -1 || 점수차 === 2 ) {
+                    alert('이겼습니다!!😆');
+                } else {
+                    alert('졌습니다ㅠㅠ😂');
+                }
+            });
+        });
+        
+        // 가위: 1, 바위: 0, 보: -1
+        // 나\컴퓨터    가위   바위    보
+        //        가위   1 1    1 0   1 -1
+        //        바위   0 1    0 0   0 -1
+        //          보  -1 1   -1 0  -1 -1
+
+    </script>
+</body>
+</html>

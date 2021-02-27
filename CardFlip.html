@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card flip</title>
+
+    <style>
+        .card {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            width: 70px;
+            height: 100px;
+            perspective: 140px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+
+        .card-front { background: navy; }
+        
+        /* .card-back { background: gainsboro; } */
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid black;
+            backface-visibility: hidden;
+        }
+
+        .card-back { transform: rotateY(180deg); }
+    </style>
+</head>
+<body>
+    <!-- 
+    <div class="card">
+        <div class="card-inner">
+            <div class="card-front">
+                앞
+            </div>
+            <div class="card-back">
+                뒤
+            </div>
+        </div>
+    </div>
+    -->
+    <div id="wrapper"></div>
+
+
+    <script>
+        var hor = 4;
+        var ver = 3;
+        var colorModel = ['red', 'red', 'orange', 'orange', 'green', 'green', 'yellow', 'yellow', 'white', 'white', 'pink', 'pink'];
+        var colorBackUp = JSON.parse(JSON.stringify(colorModel));
+        var color = [];
+        var flag = true;
+        var clickCard = [];
+        var accordCard = [];
+        var startTime;
+
+        //색상랜덤화
+        function shuffle(){
+            for(var i = 0; 0<colorModel.length; i++) {
+                color = color.concat(colorModel.splice(Math.floor(Math.random()*colorModel.length), 1));
+            }
+        }
+
+
+        function cardSetting(hor, ver){
+            flag = false;
+            for(var i = 0; i < hor*ver; i++) {
+                var card = document.createElement('div');
+                card.className = 'card';
+
+                var cardInner = document.createElement('div');
+                cardInner.className = 'card-inner';
+                var cardFront = document.createElement('div');
+                cardFront.className = 'card-front';
+                var cardBack = document.createElement('div');
+                cardBack.className = 'card-back';
+                cardBack.style.backgroundColor = color[i];
+
+                cardInner.appendChild(cardFront);
+                cardInner.appendChild(cardBack);
+                card.appendChild(cardInner);
+                document.body.appendChild(card);
+
+                // card.addEventListener('click', function(){
+                //     card.classList.toggle('flipped');
+                // });
+
+                //클로저 솔루션
+                (function(c){
+                    card.addEventListener('click', function(){
+                        if(flag === true && !accordCard.includes(c)) {
+                            c.classList.toggle('flipped');
+                            clickCard.push(c);
+                            if(clickCard.length === 2) {
+                                if(clickCard[0].querySelector('.card-back').style.backgroundColor === clickCard[1].querySelector('.card-back').style.backgroundColor) {
+                                    accordCard.push(clickCard[0]);
+                                    accordCard.push(clickCard[1]);
+                                    clickCard = [];
+
+                                    if(accordCard.length === 12) {
+                                        var finishTime = new Date();
+                                        alert('성공!!😆 ' + (finishTime - startTime)/1000 + '초 걸렸습니다');
+                                        document.querySelector('#wrapper').innerHTML = '';
+                                        colorModel = JSON.parse(JSON.stringify(colorBackUp)); //깊은복사
+                                        accordCard = [];
+                                        color = [];
+                                        startTime = null;
+                                        shuffle();
+                                        cardSetting(hor, ver);
+                                    }
+
+                                } else {
+                                    flag = false;
+                                    //두 카드의 색상이 다르면
+                                    setTimeout(function(){
+                                        clickCard[0].classList.remove('flipped');
+                                        clickCard[1].classList.remove('flipped');
+                                        flag = true; 
+                                        clickCard = [];
+                                    }, 1000);
+
+                                }
+                            }
+                        }
+                    });
+                })(card);
+                document.querySelector('#wrapper').appendChild(card);
+            }
+
+            //유저에게 카드를 확인할 시간을 준다
+            document.querySelectorAll('.card').forEach(function(card, index){
+                setTimeout(function(){
+                    card.classList.add('flipped');
+                }, 1000+(100*index) );
+            });
+
+            setTimeout(function(){
+                document.querySelectorAll('.card').forEach(function(card, index){
+                    card.classList.remove('flipped');
+                })
+                flag = true;
+                startTime = new Date();
+            }, 5000);
+            
+        }
+        shuffle();
+        cardSetting(hor, ver);
+    </script>
+</body>
+</html>
